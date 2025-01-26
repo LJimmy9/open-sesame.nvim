@@ -2,11 +2,11 @@ local M = {}
 
 ---@param input OpenSesame.Phrase
 ---@return string|nil line The result of setting the cursor
-M.try_visit_path = function(input)
-  -- TODO: This needs to return a list of results
+local function try_visit_path(input)
   local file_status = vim.fn.filereadable(input.phrase) == 1
   local dir_status = vim.fn.isdirectory(vim.fn.expand(input.phrase)) == 1
   local line = nil
+  print("visit check", vim.inspect(input), file_status, dir_status)
 
   if file_status or dir_status then
     local has_split = #vim.api.nvim_tabpage_list_wins(0) > 1
@@ -17,6 +17,7 @@ M.try_visit_path = function(input)
     end
     vim.cmd('e ' .. input.phrase)
     if file_status then
+      input.charms = input.charms or {}
       local target_row = tonumber(input.charms.row) or 1
       local target_col = tonumber(input.charms.col) or 1
       local status, msg = pcall(vim.api.nvim_win_set_cursor, 0, { target_row, target_col })
@@ -27,15 +28,23 @@ M.try_visit_path = function(input)
       end
       vim.cmd('normal zz')
       line = vim.api.nvim_get_current_line()
-      print("NAVIG LINE", line, target_row, target_col)
       line = line:sub(target_col, target_col)
     end
   else
     local error_msg = "Cannot find target:" .. vim.inspect(input)
     vim.notify(error_msg, vim.log.levels.ERROR, { title = "Error" })
-    return error(error_msg, 2)
+    -- return error(error_msg, 2)
   end
   return line
 end
 
+-- ---@type OpenSesame.Phrase
+-- local input = {
+--   phrase = "./README.md",
+-- }
+--
+-- local res = try_visit_path(input)
+-- print(res)
+
+M.try_visit_path = try_visit_path
 return M

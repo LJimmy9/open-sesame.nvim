@@ -6,14 +6,14 @@ local doors = require('doors')
 ---@alias OpenSesame.Destination string
 
 --- *A function that takes a `Destination` and returns `phrases`*
----@alias OpenSesame.Scanner fun(destination: OpenSesame.Destination): OpenSesame.Phrase[] | nil
+---@alias OpenSesame.Scanner fun(destination: OpenSesame.Destination): OpenSesame.Phrase[]
 
 --- *Returned by a `Phrase`*
 --- `phrase` The target string. A path, url, etc.
 --- `charms` Extra data that is required for the `door` function
 ---@class OpenSesame.Phrase
 ---@field phrase string
----@field charms table
+---@field charms table | nil
 
 --- *A function that takes `key`(s) to operate with*
 ---@alias OpenSesame.Door fun(phrases: OpenSesame.Phrase[]): any
@@ -39,7 +39,7 @@ M.default_matchers = {
 --- Each key is a string, and each value is a table with 'scanners' and 'door' fields
 --- @class OpenSesame.Opts
 --- @field [string] OpenSesame.Portal
-M.opts = {
+local opts = {
   relative_paths = {
     scanners = {
       scanners.relative_path
@@ -59,34 +59,44 @@ M.opts = {
 --- Read more at the [Lua Documentation](https://www.lua.org/manual/5.4/manual.html#6.4.1)
 ---@param destination OpenSesame.Destination
 ---@return OpenSesame.Phrase|nil result The `target` and `pos` which contains the data required to visit the path.
-M.execute = function(destination)
+local function execute(destination)
   local phrases = nil
-  local out = nil
+  ---@type string[]
+  local out = {}
 
-  for _, portal in pairs(M.opts) do
+  for _, portal in pairs(opts) do
     for _, scanner in ipairs(portal.scanners) do
       phrases = scanner(destination)
-      if phrases then
-        for _, phrase in ipairs(phrases) do
-          out = portal.door(phrase)
-          if out then
-            return out
-          end
+      for _, phrase in ipairs(phrases) do
+        local result = portal.door(phrase)
+        if result then
+          table.insert(out, result)
         end
-        break
       end
+      break
     end
   end
 
-  local msg = "No patterns were matched"
-  vim.notify(msg, vim.log.levels.ERROR, { title = "Error" })
-  return error(msg, 2)
+  if (#out > 0) then
+    return out
+  else
+    local msg = "No patterns were matched"
+    vim.notify(msg, vim.log.levels.ERROR, { title = "Error" })
+    return error(msg, 2)
+  end
 end
 
-M.line_to_path = function()
+local function line_to_path()
   local line = vim.api.nvim_get_current_line()
-  local path = M.execute(line)
-  M.try_visit_path(path)
+  local _path = execute(line)
 end
+
+-- local line = "./README.md"
+-- local res = execute(line)
+-- print(res)
+
+M.opts = opts
+M.execute = execute
+M.line_to_path = line_to_path
 
 return M
