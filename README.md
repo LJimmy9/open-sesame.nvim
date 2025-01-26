@@ -16,19 +16,23 @@ Add screencap here
 
 ## Overview
 
-A `travelor` is any string input.
-A `phrase` is a function that takes a `travelor` and returns `key`(s).
-A `door` is a function that takes `key`(s) to operate with. 
+A `destination` is any string input.
+
+A `scanner` is a function that takes a `destination` and returns `phrases`.
+
+A `door` is a function that operates with `phrases`.
+
+A `portal` stores `scanner(s)` with a `door`
 
 ## Usage
 
 ```lua
 require('open-sesame').setup({
-    phrases = {
-    --- table of functions that returns an `@class OpenSesame.Result`
+    scanners = {
+    --- list of functions that returns a `@class OpenSesame.Key(s)`
     }
     doors ={
-    --- table of functions that takes a list of `@class OpenSesame.Result`
+    --- list of functions that takes a list of `@class OpenSesame.Key(s)` to operate on
     }
 })
 ```
