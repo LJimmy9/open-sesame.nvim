@@ -6,7 +6,7 @@ local function try_visit_path(input)
   local file_status = vim.fn.filereadable(input.phrase) == 1
   local dir_status = vim.fn.isdirectory(vim.fn.expand(input.phrase)) == 1
   local line = nil
-  print("visit check", vim.inspect(input), file_status, dir_status)
+  -- print("visit check", vim.inspect(input), file_status, dir_status)
 
   if file_status or dir_status then
     local has_split = #vim.api.nvim_tabpage_list_wins(0) > 1
@@ -40,7 +40,8 @@ end
 
 -- ---@type OpenSesame.Phrase
 -- local input = {
---   phrase = "./README.md",
+--   -- phrase = "./README.md",
+--   phrase = " nothing valuable here",
 -- }
 --
 -- local res = try_visit_path(input)

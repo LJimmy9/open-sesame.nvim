@@ -67,15 +67,19 @@ local function execute(destination)
   for _, portal in pairs(opts) do
     for _, scanner in ipairs(portal.scanners) do
       phrases = scanner(destination)
-      for _, phrase in ipairs(phrases) do
-        local result = portal.door(phrase)
-        if result then
-          table.insert(out, result)
+      -- if scanner was successful stop there
+      if (#phrases > 0) then
+        for _, phrase in ipairs(phrases) do
+          local result = portal.door(phrase)
+          if result then
+            table.insert(out, result)
+          end
         end
+        goto end_loop
       end
-      break
     end
   end
+  ::end_loop::
 
   if (#out > 0) then
     return out
@@ -91,7 +95,7 @@ local function line_to_path()
   local _path = execute(line)
 end
 
--- local line = "./README.md"
+-- local line = "./tests/initial_spec.lua"
 -- local res = execute(line)
 -- print(res)
 

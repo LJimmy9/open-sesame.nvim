@@ -49,7 +49,7 @@ local function relative_path(input)
       i_start = i_start - 1
       local char = input:sub(i_start, i_start)
       local is_break = char:find(break_chars)
-      print("in relative path while", char, is_break)
+      -- print("in relative path while", char, is_break)
       if (is_break) then
         i_start = i_start + 1
         break
@@ -60,7 +60,7 @@ local function relative_path(input)
     local pos = path_pos(trim_left)
     phrase.phrase = trim_left:sub(1, i_end - 1)
     phrase.charms = pos
-    print("phrase left", vim.inspect(phrase))
+    -- print("phrase left", vim.inspect(phrase))
     table.insert(phrases, phrase)
     local trim_phrase = input:sub(i_end, #input)
     i_start = trim_phrase:find("[/\\]")
