@@ -95,7 +95,7 @@ local function line_to_path()
   local _path = execute(line)
 end
 
--- local line = "./tests/initial_spec.lua"
+-- local line = "plugin/"
 -- local res = execute(line)
 -- print(res)
 

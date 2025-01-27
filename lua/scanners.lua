@@ -69,6 +69,11 @@ local function relative_path(input)
   return phrases
 end
 
+
+-- local input = "ea plugin/"
+-- local result = relative_path(input)
+-- print(vim.inspect(result))
+
 M.path_pos = path_pos
 M.relative_path = relative_path
 return M

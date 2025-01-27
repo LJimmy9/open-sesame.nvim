@@ -6,7 +6,7 @@ local function try_visit_path(input)
   local file_status = vim.fn.filereadable(input.phrase) == 1
   local dir_status = vim.fn.isdirectory(vim.fn.expand(input.phrase)) == 1
   local line = nil
-  -- print("visit check", vim.inspect(input), file_status, dir_status)
+  print("visit check", vim.inspect(input), file_status, dir_status)
 
   if file_status or dir_status then
     local has_split = #vim.api.nvim_tabpage_list_wins(0) > 1
@@ -29,6 +29,8 @@ local function try_visit_path(input)
       vim.cmd('normal zz')
       line = vim.api.nvim_get_current_line()
       line = line:sub(target_col, target_col)
+    else
+      line = input.phrase
     end
   else
     local error_msg = "Cannot find target:" .. vim.inspect(input)
@@ -38,10 +40,10 @@ local function try_visit_path(input)
   return line
 end
 
--- ---@type OpenSesame.Phrase
+---@type OpenSesame.Phrase
 -- local input = {
 --   -- phrase = "./README.md",
---   phrase = " nothing valuable here",
+--   phrase = "plugin/",
 -- }
 --
 -- local res = try_visit_path(input)
