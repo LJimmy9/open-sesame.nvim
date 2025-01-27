@@ -1,5 +1,3 @@
-local M = {}
-
 ---@class OpenSesame.Pos
 ---@field row string
 ---@field col string
@@ -70,10 +68,12 @@ local function relative_path(input)
 end
 
 
+-- TODO: this results in an infinite loop
 -- local input = "ea plugin/"
 -- local result = relative_path(input)
 -- print(vim.inspect(result))
 
+local M = {}
 M.path_pos = path_pos
 M.relative_path = relative_path
 return M

@@ -1,4 +1,3 @@
-local M = {}
 local scanners = require('scanners')
 local doors = require('doors')
 
@@ -99,6 +98,7 @@ end
 -- local res = execute(line)
 -- print(res)
 
+local M = {}
 M.opts = opts
 M.execute = execute
 M.line_to_path = line_to_path

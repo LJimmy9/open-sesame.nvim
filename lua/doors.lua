@@ -1,5 +1,3 @@
-local M = {}
-
 ---@param input OpenSesame.Phrase
 ---@return string|nil line The result of setting the cursor
 local function try_visit_path(input)
@@ -49,5 +47,6 @@ end
 -- local res = try_visit_path(input)
 -- print(res)
 
+local M = {}
 M.try_visit_path = try_visit_path
 return M
