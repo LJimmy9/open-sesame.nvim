@@ -41,9 +41,9 @@ end
 ---@type OpenSesame.Phrase
 -- local input = {
 --   -- phrase = "./README.md",
---   phrase = "plugin/",
+--   -- phrase = "plugin/",
+--   phrase = "~/projects/open-sesame.nvim/"
 -- }
---
 -- local res = try_visit_path(input)
 -- print(res)
 

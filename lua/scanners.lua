@@ -35,43 +35,59 @@ end
 local function relative_path(input)
   ---@type OpenSesame.Phrase[]
   local phrases = {}
-  local i_start = input:find("[/\\]")
+  local slash_chars = "[~./..//\\]"
   local break_chars = "[ \t\r\n]"
+  -- local i_start = input:find(slash_chars)
 
-  while (i_start) do
-    local phrase = {
-      phrase = "",
-      charms = {}
-    }
-    while (1 < i_start) do
-      i_start = i_start - 1
-      local char = input:sub(i_start, i_start)
-      local is_break = char:find(break_chars)
-      -- print("in relative path while", char, is_break)
-      if (is_break) then
-        i_start = i_start + 1
-        break
-      end
+  -- i_last_slash = substr:match '^.*()/'
+
+  --- "ea plugin/"
+  ---  _________^  find slash
+  ---  __^_______  find break and add one or stop if at end
+  ---  ___^_____^  phrase is substring
+  ---  __________^ continue after break if it exists
+
+  ---@type string[]
+  local substrs = {}
+  local substr = ""
+  for c in input:gmatch(".") do
+    substr = substr .. c
+    if c:match(break_chars) then
+      table.insert(substrs, substr)
+      substr = ""
     end
-    local trim_left = input:sub(i_start, #input)
-    local i_end = trim_left:find(":") or trim_left:find(break_chars) or #trim_left + 1
-    local pos = path_pos(trim_left)
-    phrase.phrase = trim_left:sub(1, i_end - 1)
-    phrase.charms = pos
-    -- print("phrase left", vim.inspect(phrase))
-    table.insert(phrases, phrase)
-    local trim_phrase = input:sub(i_end, #input)
-    i_start = trim_phrase:find("[/\\]")
   end
+  table.insert(substrs, substr)
+
+  for _, s in ipairs(substrs) do
+    local i_start = s:find(slash_chars)
+    if i_start then
+      local i_end = s:find(":") or #s + 1
+      local phrase = s:sub(1, i_end - 1)
+      local pos = path_pos(s)
+      table.insert(phrases, {
+        phrase = phrase,
+        charms = pos
+      })
+    end
+  end
+  print("phrases!", vim.inspect(phrases))
 
   return phrases
 end
 
 
--- TODO: this results in an infinite loop
--- local input = "ea plugin/"
+-- TODO: DONE! this results in an infinite loop
+-- TODO: add tests for this
+-- local input = "ea ../README.md:2 plugin/:4:2 something_else/ ../README.md:4:2"
+-- input = "/plugin/ plugin/"
+-- input = "plugin/"
+-- input = "../README.md:1 trash"
+-- input = "./README.md:1:3 trash"
+-- input = "~/projects/open-sesame.nvim/"
+-- input = "vim: filetype=compilation:path+=~/projects/open-sesame.nvim"
 -- local result = relative_path(input)
--- print(vim.inspect(result))
+-- print("RESULT!", vim.inspect(result))
 
 local M = {}
 M.path_pos = path_pos

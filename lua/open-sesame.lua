@@ -26,14 +26,14 @@ local doors = require('doors')
 --- `slash` match the first slash (`/\`). For absolute directories like `/Users`
 --- `home` matches the first `~` character. For absolute path starting at home like '~/Downloads'
 --- `dot` matches the one or two `.` characters. For relative paths like `./` and `../`
-M.default_matchers = {
-  -- os_word = "%s?(%a)*[/\\]",
-  os_word = scanners.relative_path,
-  -- os_slash = "()[/\\]",
-  -- os_home = "()~[/\\]",
-  -- os_dot = "()%.%.?[/\\]",
-  -- os_another_start_pattern = "%s*()[/\\]",
-}
+-- M.default_matchers = {
+-- os_word = "%s?(%a)*[/\\]",
+-- os_word = scanners.relative_path,
+-- os_slash = "()[/\\]",
+-- os_home = "()~[/\\]",
+-- os_dot = "()%.%.?[/\\]",
+-- os_another_start_pattern = "%s*()[/\\]",
+-- }
 
 --- Each key is a string, and each value is a table with 'scanners' and 'door' fields
 --- @class OpenSesame.Opts
