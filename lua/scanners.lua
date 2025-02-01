@@ -36,10 +36,7 @@ local function relative_path(input)
   ---@type OpenSesame.Phrase[]
   local phrases = {}
   local slash_chars = "[~./..//\\]"
-  local break_chars = "[ \t\r\n]"
-  -- local i_start = input:find(slash_chars)
-
-  -- i_last_slash = substr:match '^.*()/'
+  local break_chars = "[ \t\r\n\"']"
 
   --- "ea plugin/"
   ---  _________^  find slash
@@ -50,14 +47,18 @@ local function relative_path(input)
   ---@type string[]
   local substrs = {}
   local substr = ""
+  -- vim.notify("adding phrase here" .. vim.inspect(input), vim.log.levels.ERROR, { title = "Error" })
   for c in input:gmatch(".") do
-    substr = substr .. c
     if c:match(break_chars) then
+      -- vim.notify("last substr here" .. vim.inspect(substr), vim.log.levels.ERROR, { title = "Error" })
       table.insert(substrs, substr)
       substr = ""
+    else
+      substr = substr .. c
     end
   end
   table.insert(substrs, substr)
+  -- vim.notify("after substr " .. vim.inspect(substrs), vim.log.levels.ERROR, { title = "Error" })
 
   for _, s in ipairs(substrs) do
     local i_start = s:find(slash_chars)
@@ -71,8 +72,10 @@ local function relative_path(input)
       })
     end
   end
-  print("phrases!", vim.inspect(phrases))
 
+  -- vim.notify("phrases: " .. vim.inspect(phrases), vim.log.levels.ERROR, { title = "Error" })
+
+  -- vim.notify("after phrases " .. vim.inspect(phrases), vim.log.levels.ERROR, { title = "Error" })
   return phrases
 end
 
@@ -80,14 +83,17 @@ end
 -- TODO: DONE! this results in an infinite loop
 -- TODO: add tests for this
 -- local input = "ea ../README.md:2 plugin/:4:2 something_else/ ../README.md:4:2"
--- input = "/plugin/ plugin/"
+-- input = "./plugin/ ./tests/"
 -- input = "plugin/"
 -- input = "../README.md:1 trash"
 -- input = "./README.md:1:3 trash"
 -- input = "~/projects/open-sesame.nvim/"
 -- input = "vim: filetype=compilation:path+=~/projects/open-sesame.nvim"
+-- input = "./README.md:1:2"
+-- input = "./README.md:3:8 gibberish"
+-- input = [[local input = "./README.md:1:2"]]
 -- local result = relative_path(input)
--- print("RESULT!", vim.inspect(result))
+-- print(vim.inspect(result))
 
 local M = {}
 M.path_pos = path_pos

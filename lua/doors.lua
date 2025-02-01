@@ -1,10 +1,7 @@
----@param input OpenSesame.Phrase
----@return string|nil line The result of setting the cursor
-local function try_visit_path(input)
+local function visit_split(input)
   local file_status = vim.fn.filereadable(input.phrase) == 1
   local dir_status = vim.fn.isdirectory(vim.fn.expand(input.phrase)) == 1
   local line = nil
-  print("visit check", vim.inspect(input), file_status, dir_status)
 
   if file_status or dir_status then
     local has_split = #vim.api.nvim_tabpage_list_wins(0) > 1
@@ -13,6 +10,7 @@ local function try_visit_path(input)
     else
       vim.cmd('split')
     end
+
     vim.cmd('e ' .. input.phrase)
     if file_status then
       input.charms = input.charms or {}
@@ -31,18 +29,38 @@ local function try_visit_path(input)
       line = input.phrase
     end
   else
-    local error_msg = "Cannot find target:" .. vim.inspect(input)
-    vim.notify(error_msg, vim.log.levels.ERROR, { title = "Error" })
+    local error_msg = "Cannot find target: " .. input.phrase
+    vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
     -- return error(error_msg, 2)
   end
   return line
 end
 
----@type OpenSesame.Phrase
+---@param input OpenSesame.Phrase[]
+---@return string[] lines The result of setting the cursor
+local function try_visit_path(input)
+  local out = {}
+  assert(#input > 0, "Input must be greater than 0")
+
+  for _, phrase in ipairs(input) do
+    local result = visit_split(phrase)
+    if result then
+      table.insert(out, result)
+    end
+  end
+  return out
+end
+
+---@type OpenSesame.Phrase[]
 -- local input = {
---   -- phrase = "./README.md",
---   -- phrase = "plugin/",
---   phrase = "~/projects/open-sesame.nvim/"
+--   {
+--     -- phrase = "./README.md",
+--     phrase = "./plugin/ ",
+--     -- phrase = "~/projects/open-sesame.nvim/"
+--   },
+--   {
+--     phrase = "./tests/",
+--   }
 -- }
 -- local res = try_visit_path(input)
 -- print(res)

@@ -95,7 +95,7 @@ describe("scan word function", function()
   it("should return readme with row and column and excess gibberish", function()
     local input = "./README.md:3:8 gibberish"
     local output = open_sesame.execute(input)
-    eq({ "de" }, output)
+    eq({ "e" }, output)
   end)
   it("should return multiple results", function()
     local input = "./README.md:3:8 gibberish ./README.md:1:2 gibberish"
@@ -103,3 +103,6 @@ describe("scan word function", function()
     eq({ "e", "#" }, output)
   end)
 end)
+
+-- BUG: cannot find plugin folder?
+-- ./plugin/ ./tests/

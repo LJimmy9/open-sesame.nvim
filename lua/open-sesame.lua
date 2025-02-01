@@ -45,19 +45,19 @@ local opts = {
     },
     door = doors.try_visit_path
   },
-  absolute_paths = {
-    scanners = {
-      scanners.relative_path
-    },
-    door = doors.try_visit_path
-  }
+  -- absolute_paths = {
+  --   scanners = {
+  --     scanners.relative_path
+  --   },
+  --   door = doors.try_visit_path
+  -- }
 }
 
 
 --- Patterns in Lua are described by strings.
 --- Read more at the [Lua Documentation](https://www.lua.org/manual/5.4/manual.html#6.4.1)
 ---@param destination OpenSesame.Destination
----@return OpenSesame.Phrase|nil result The `target` and `pos` which contains the data required to visit the path.
+---@return any|nil result The result of using the door. Can be the text under cursor / any relevant data that can be easily tested against..
 local function execute(destination)
   local phrases = nil
   ---@type string[]
@@ -66,14 +66,10 @@ local function execute(destination)
   for _, portal in pairs(opts) do
     for _, scanner in ipairs(portal.scanners) do
       phrases = scanner(destination)
-      -- if scanner was successful stop there
+
       if (#phrases > 0) then
-        for _, phrase in ipairs(phrases) do
-          local result = portal.door(phrase)
-          if result then
-            table.insert(out, result)
-          end
-        end
+        out = portal.door(phrases)
+        -- if scanner was successful stop here
         goto end_loop
       end
     end
@@ -89,12 +85,44 @@ local function execute(destination)
   end
 end
 
-local function line_to_path()
-  local line = vim.api.nvim_get_current_line()
-  local _path = execute(line)
+--- Copied from https://github.com/telemachus/dotfiles/blob/main/config/nvim/lua/bitly.lua
+local _should_swap = function(start_pos, end_pos)
+  if start_pos[2] > end_pos[2] then
+    return true
+  end
+  if start_pos[2] == end_pos[2] and start_pos[3] > end_pos[3] then
+    return true
+  end
+  return false
 end
 
+local function get_visual_selection()
+  local start_pos = vim.fn.getpos("v")
+  local end_pos = vim.fn.getpos(".")
+  if _should_swap(start_pos, end_pos) then
+    start_pos, end_pos = end_pos, start_pos
+  end
+
+  local lines = vim.fn.getregion(start_pos, end_pos)
+  vim.notify(vim.inspect(lines), vim.log.levels.ERROR, { title = "Error" })
+  return lines
+end
+
+local function line_to_path()
+  print("before line to path")
+  local line = vim.api.nvim_get_current_line()
+  print("post line to path")
+  if vim.fn.mode():lower() == "v" then
+    local visual_selection = get_visual_selection()
+    line = table.concat(visual_selection, "\n")
+  end
+  local _p = execute(line)
+end
+
+vim.keymap.set({ "n", "v" }, "<leader>gd", line_to_path)
+
 -- local line = "plugin/"
+-- line = "local input = ./README.md:3:8 gibberish"
 -- local res = execute(line)
 -- print(res)
 
