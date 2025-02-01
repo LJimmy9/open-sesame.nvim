@@ -24,7 +24,10 @@ local doors = require('doors')
 --- Each key is a string, and each value is a table with 'scanners' and 'door' fields
 --- @class OpenSesame.Opts
 --- @field [string] OpenSesame.Portal
-local opts = {
+local opts = {}
+
+--- @type OpenSesame.Opts
+local default_opts = {
   nvim_paths = {
     scanners = {
       scanners.find_path
@@ -32,7 +35,6 @@ local opts = {
     door = doors.try_visit_path
   },
 }
-
 
 ---@param destination OpenSesame.Destination
 ---@return any|nil result The result of using the door. Can be the text under cursor / any relevant data that can be easily tested against..
@@ -82,9 +84,23 @@ local function selection_to_path()
   local _p = execute(line)
 end
 
+
 local M = {}
 M.opts = opts
 M.execute = execute
 M.selection_to_path = selection_to_path
+M.did_setup = false
+
+---@param user_opts OpenSesame.Opts?
+M.setup = function(user_opts)
+  if M.did_setup then
+    return vim.notify("open-sesame.nvim is already setup", vim.log.levels.ERROR, { title = "open-sesame.nvim" })
+  end
+  user_opts = user_opts or {}
+  opts = vim.tbl_deep_extend('force', opts, default_opts)
+  opts = vim.tbl_deep_extend('force', opts, user_opts)
+  M.did_setup = true
+end
+
 
 return M
