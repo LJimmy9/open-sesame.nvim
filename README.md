@@ -38,7 +38,7 @@ return {
     }
   }
   config = function()
-    vim.keymap.set({ "n", "v" }, "<leader>gd", require('open-sesame').line_to_path, { noremap = true })
+    vim.keymap.set({ "n", "v" }, "<leader>gd", require('open-sesame').selection_to_path, { noremap = true })
   end
 }
 ```

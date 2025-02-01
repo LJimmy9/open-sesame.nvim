@@ -107,20 +107,6 @@ local function try_visit_path(input)
   return out
 end
 
----@type OpenSesame.Phrase[]
--- local input = {
---   {
---     -- phrase = "./README.md",
---     phrase = "./plugin/",
---     -- phrase = "~/projects/open-sesame.nvim/"
---   },
---   {
---     phrase = "./tests/",
---   }
--- }
--- local res = try_visit_path(input)
--- print(res)
-
 local M = {}
 M.try_visit_path = try_visit_path
 return M

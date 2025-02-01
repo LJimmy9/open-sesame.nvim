@@ -26,7 +26,7 @@ describe("smoke tests", function()
   it("this file should work", function()
     local in_path = "./tests/initial_spec.lua"
     local out_path = "./tests/initial_spec.lua"
-    local result = scanners.relative_path(in_path)
+    local result = scanners.find_path(in_path)
     -- check not the execute but the return of phrases
     eq(
       {
