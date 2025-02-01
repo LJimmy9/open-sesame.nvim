@@ -24,16 +24,22 @@ A `door` is a function that operates with `phrases`.
 
 A `portal` stores `scanner(s)` with a `door`
 
-## Usage
+## Installation
 
 ```lua
-require('open-sesame').setup({
+return {
+  "ljimmy9/open-sesame.nvim",
+  opts = {
     scanners = {
-    --- list of functions that returns a `@class OpenSesame.Key(s)`
+    --- list of functions that returns a `@class OpenSesame.Phrase[]`
     }
     doors ={
-    --- list of functions that takes a list of `@class OpenSesame.Key(s)` to operate on
+    --- list of functions that takes a list of `@class OpenSesame.Phrase[]` to operate on
     }
-})
+  }
+  config = function()
+    vim.keymap.set({ "n", "v" }, "<leader>gd", require('open-sesame').line_to_path, { noremap = true })
+  end
+}
 ```
 

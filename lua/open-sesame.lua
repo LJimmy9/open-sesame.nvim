@@ -85,37 +85,23 @@ local function execute(destination)
   end
 end
 
---- Copied from https://github.com/telemachus/dotfiles/blob/main/config/nvim/lua/bitly.lua
-local _should_swap = function(start_pos, end_pos)
-  if start_pos[2] > end_pos[2] then
-    return true
-  end
-  if start_pos[2] == end_pos[2] and start_pos[3] > end_pos[3] then
-    return true
-  end
-  return false
-end
-
-local function get_visual_selection()
+---@param visual_mode any Usually the result of `vim.fn.mode()`
+local function get_visual_selection(visual_mode)
   local start_pos = vim.fn.getpos("v")
   local end_pos = vim.fn.getpos(".")
-  if _should_swap(start_pos, end_pos) then
-    start_pos, end_pos = end_pos, start_pos
-  end
 
-  local lines = vim.fn.getregion(start_pos, end_pos)
-  vim.notify(vim.inspect(lines), vim.log.levels.ERROR, { title = "Error" })
+  local lines = vim.fn.getregion(start_pos, end_pos, { type = visual_mode })
   return lines
 end
 
 local function line_to_path()
-  print("before line to path")
   local line = vim.api.nvim_get_current_line()
-  print("post line to path")
-  if vim.fn.mode():lower() == "v" then
-    local visual_selection = get_visual_selection()
+  local mode = vim.fn.mode()
+  if mode:match('[vV]') then
+    local visual_selection = get_visual_selection(mode)
     line = table.concat(visual_selection, "\n")
   end
+
   local _p = execute(line)
 end
 
