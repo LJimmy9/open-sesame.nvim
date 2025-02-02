@@ -81,6 +81,23 @@ local function visit_tab(input)
   return line
 end
 
+local function add_to_qf_list(input)
+  vim.fn.setqflist({}, 'r')
+  for _, p in ipairs(input) do
+    local path = vim.fn.fnamemodify(p.phrase, ":p")
+    local qf_item = {
+      filename = path,
+      text = "open-sesame file" .. p.phrase
+    }
+    if p.charms then
+      qf_item.lnum = p.charms.row or 1
+      qf_item.col = p.charms.col or 1
+      qf_item.text = "open-sesame directory" .. p.phrase
+    end
+    vim.fn.setqflist({ qf_item }, 'a')
+  end
+end
+
 --- If there is just one phrase, will open in split.
 --- Otherwise visits each phrase in tabs
 --- Navigate tabs with `gt` and `gT`
@@ -102,10 +119,28 @@ local function try_visit_path(input)
         table.insert(out, result)
       end
     end
+    add_to_qf_list(input)
   end
 
   return out
 end
+
+local input = {
+  {
+    phrase = "./README.md",
+    charms = {
+      rol = 5,
+      col = 5
+    }
+    -- phrase = "./plugin/",
+    -- phrase = "~/projects/open-sesame.nvim/"
+  },
+  {
+    phrase = "./tests/",
+  }
+}
+local res = try_visit_path(input)
+print(res)
 
 local M = {}
 M.try_visit_path = try_visit_path
