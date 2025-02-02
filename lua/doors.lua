@@ -81,6 +81,8 @@ local function visit_tab(input)
   return line
 end
 
+--- Directories that are sent cannot be visited.
+--- Might be due to default neovim behavior?
 local function add_to_qf_list(input)
   vim.fn.setqflist({}, 'r')
   for _, p in ipairs(input) do
