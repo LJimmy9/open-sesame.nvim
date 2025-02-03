@@ -4,10 +4,10 @@
 
 > [!WARNING]
 > This is designed for my use cases, the implementation may be fragile. Feedback is appreciated!
-> For basic usage, the defaults builtin to vim may suffice. Check out [alternatives](#👀-alternatives)
+> For basic usage, the defaults builtin to vim may suffice. Check out [alternatives](#alternatives)
 
 ## 🖥️ Demo
-[Screencap](https://github.com/ljimmy9/open-sesame.nvim/assets/demo.mov)
+https://github.com/user-attachments/assets/c181bfc4-6158-45ea-890f-7b3a4d618132
 
 ## 📋 Features
 
@@ -42,7 +42,7 @@ return {
 
 See [CUSTOMIZATION.md](https://github.com/ljimmy9/open-sesame.nvim/CUSTOMIZATION.md)
 
-## 👀 Alternatives
+## Alternatives
 
 Builtin 
 - `gx` opens a URL
