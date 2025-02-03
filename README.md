@@ -6,8 +6,8 @@
 > This is designed for my use cases, the implementation may be fragile. Feedback is appreciated!
 > For basic usage, the defaults builtin to vim may suffice. Check out [alternatives](#👀-alternatives)
 
-## 🖥️ Showcase
-Add screencap here
+## 🖥️ Demo
+[Screencap](https://github.com/ljimmy9/open-sesame.nvim/assets/demo.mov)
 
 ## 📋 Features
 
