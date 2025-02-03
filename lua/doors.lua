@@ -19,6 +19,8 @@ local function visit_split(input)
   local dir_status = vim.fn.isdirectory(vim.fn.expand(input.phrase)) == 1
   local line = nil
 
+  print("doing split", file_status, dir_status, input.phrase)
+
   if file_status or dir_status then
     create_or_use_split()
 
@@ -41,7 +43,7 @@ local function visit_split(input)
     end
   else
     local error_msg = "Cannot find target: " .. input.phrase
-    vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
+    -- vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
     -- return error(error_msg, 2)
   end
   return line
@@ -75,14 +77,16 @@ local function visit_tab(input)
     end
   else
     local error_msg = "Cannot find target: " .. input.phrase
-    vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
+    -- vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
     -- return error(error_msg, 2)
   end
   return line
 end
 
 --- Directories that are sent cannot be visited.
---- Might be due to default neovim behavior?
+--- Seems to be a bug with oil.nvim
+--- https://github.com/stevearc/oil.nvim/issues/373
+---@param input OpenSesame.Phrase[]
 local function add_to_qf_list(input)
   vim.fn.setqflist({}, 'r')
   for _, p in ipairs(input) do
@@ -107,14 +111,17 @@ end
 ---@return string[] lines The result of setting the cursor
 local function try_visit_path(input)
   local out = {}
-  assert(#input > 0, "Input must be greater than 0")
+  assert(#input > 0, "input must be greater than 0")
 
+  print("CHECK", vim.inspect(input), #input)
   if #input == 1 then
+    print("doing 1 things")
     local result = visit_split(input[1])
     if result then
       table.insert(out, result)
     end
   else
+    print("not doing 1 things")
     for _, phrase in ipairs(input) do
       local result = visit_tab(phrase)
       if result then
@@ -127,23 +134,23 @@ local function try_visit_path(input)
   return out
 end
 
-local input = {
-  {
-    phrase = "./README.md",
-    charms = {
-      rol = 5,
-      col = 5
-    }
-    -- phrase = "./plugin/",
-    -- phrase = "~/projects/open-sesame.nvim/"
-  },
-  {
-    phrase = "./tests/",
-  }
-}
-local res = try_visit_path(input)
-print(res)
+---@param input OpenSesame.Phrase[]
+---@return string[] lines The result of setting the cursor
+local function try_system_open(input)
+  local out = {}
+  assert(#input > 0, "input must be greater than 0")
+
+  for _, phrase in ipairs(input) do
+    phrase.phrase = phrase.phrase:gsub("#", [[\#]])
+    local cmd = "!open " .. phrase.phrase
+    vim.cmd(cmd)
+
+    table.insert(out, phrase.phrase)
+  end
+  return out
+end
 
 local M = {}
 M.try_visit_path = try_visit_path
+M.try_system_open = try_system_open
 return M

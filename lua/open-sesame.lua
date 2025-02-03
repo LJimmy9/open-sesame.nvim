@@ -28,6 +28,12 @@ local opts = {}
 
 --- @type OpenSesame.Opts
 local default_opts = {
+  url_open = {
+    scanners = {
+      scanners.find_url
+    },
+    door = doors.try_system_open
+  },
   nvim_paths = {
     scanners = {
       scanners.find_path
@@ -43,26 +49,28 @@ local function execute(destination)
   ---@type string[]
   local out = {}
 
-  for _, portal in pairs(opts) do
+  for k, portal in pairs(opts) do
     for _, scanner in ipairs(portal.scanners) do
       phrases = scanner(destination)
 
       if (#phrases > 0) then
         out = portal.door(phrases)
         -- if scanner was successful stop here
-        goto end_loop
+        if #out > 0 then
+          return out
+        end
       end
     end
   end
-  ::end_loop::
-
-  if (#out > 0) then
-    return out
-  else
-    local msg = "No patterns were matched"
-    vim.notify(msg, vim.log.levels.ERROR, { title = "Error" })
-    return error(msg, 2)
-  end
+  -- ::end_loop::
+  --
+  -- if (#out > 0) then
+  --   return out
+  -- else
+  local msg = "No patterns were matched"
+  vim.notify(msg, vim.log.levels.ERROR, { title = "Error" })
+  return error(msg, 2)
+  -- end
 end
 
 ---@param visual_mode any Usually the result of `vim.fn.mode()`
@@ -86,6 +94,7 @@ end
 
 
 local M = {}
+M.default_opts = default_opts
 M.opts = opts
 M.execute = execute
 M.selection_to_path = selection_to_path
@@ -97,10 +106,16 @@ M.setup = function(user_opts)
     return vim.notify("open-sesame.nvim is already setup", vim.log.levels.ERROR, { title = "open-sesame.nvim" })
   end
   user_opts = user_opts or {}
-  opts = vim.tbl_deep_extend('force', opts, default_opts)
+  opts = vim.tbl_deep_extend('force', opts, M.default_opts)
   opts = vim.tbl_deep_extend('force', opts, user_opts)
   M.did_setup = true
 end
 
+-- M.setup({})
+-- local line = "plugin/"
+-- line = "local input = ./README.md:3:8 gibberish"
+-- line = "https://google.com somethingafter https://google.com"
+-- local res = execute(line)
+-- print(res)
 
 return M

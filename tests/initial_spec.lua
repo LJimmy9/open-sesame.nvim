@@ -1,6 +1,7 @@
 ---@diagnostic disable: undefined-global, undefined-field
 local eq = assert.are.same
 local open_sesame = require("open-sesame")
+open_sesame.setup({})
 local doors = require("doors")
 local scanners = require("scanners")
 local function should_fail(fun)
@@ -104,5 +105,35 @@ describe("scan word function", function()
   end)
 end)
 
--- BUG: cannot find plugin folder?
--- ./plugin/ ./tests/
+describe("visit url smoke test", function()
+  it("google should work", function()
+    local input = "https://google.com somethingafter https://google.com"
+    local result = scanners.find_url(input)
+    eq(
+      {
+        {
+          phrase = "https://google.com"
+        },
+        {
+          phrase = "https://google.com"
+        }
+      }, result)
+  end)
+  --- TODO: This test doesnt ever fail. Adjustments need to be made to the scanner function
+  --- Unsure how to extract the error from vim.cmd
+  it("# in url should work", function()
+    local input = "https://www.lua.org/manual/5.1/manual.html#6.4.1"
+    local result = scanners.find_url(input)
+    eq(
+      {
+        {
+          phrase = "https://www.lua.org/manual/5.1/manual.html#6.4.1"
+        },
+      }, result)
+  end)
+end)
+
+-- https://www.lua.org/manual/5.1/manual.html#6.4.1
+
+-- local input = "https://google.com somethingafter https://google.com\n"
+-- find_url(input)
