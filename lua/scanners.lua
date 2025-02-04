@@ -33,6 +33,7 @@ end
 ---@return OpenSesame.Phrase[] phrases
 local function find_path(input)
   ---@type OpenSesame.Phrase[]
+
   local phrases = {}
   local start_chars = "[~./..//\\]"
   local break_chars = "[ \t\r\n\"']"
@@ -71,6 +72,35 @@ local function find_path(input)
           charms = pos
         })
       end
+    end
+  end
+
+  return phrases
+end
+
+---@param input OpenSesame.Destination
+---@return OpenSesame.Phrase[] phrases
+local function find_file(input)
+  ---@type OpenSesame.Phrase[]
+  local phrases = {}
+  local start_chars = "[/]"
+
+  local i = input:match("file:()") or 1
+  local s = input:sub(i + 1, #input)
+
+  local i_start = s:find(start_chars)
+  if i_start then
+    local i_end = s:find(":") or #s + 1
+    local phrase = s:sub(1, i_end - 1)
+    local pos = path_pos(s)
+
+    local file_status = vim.fn.filereadable(vim.fn.expand(phrase)) == 1
+    local dir_status = vim.fn.isdirectory(vim.fn.expand(phrase)) == 1
+    if file_status or dir_status then
+      table.insert(phrases, {
+        phrase = phrase,
+        charms = pos
+      })
     end
   end
 
@@ -120,5 +150,6 @@ end
 local M = {}
 M.path_pos = path_pos
 M.find_path = find_path
+M.find_file = find_file
 M.find_url = find_url
 return M

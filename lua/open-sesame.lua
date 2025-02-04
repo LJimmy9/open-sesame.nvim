@@ -36,7 +36,8 @@ local default_opts = {
   },
   nvim_paths = {
     scanners = {
-      scanners.find_path
+      scanners.find_path,
+      scanners.find_file
     },
     door = doors.try_visit_path
   },
@@ -62,15 +63,9 @@ local function execute(destination)
       end
     end
   end
-  -- ::end_loop::
-  --
-  -- if (#out > 0) then
-  --   return out
-  -- else
   local msg = "No patterns were matched"
   vim.notify(msg, vim.log.levels.ERROR, { title = "Error" })
   return error(msg, 2)
-  -- end
 end
 
 ---@param visual_mode any Usually the result of `vim.fn.mode()`
