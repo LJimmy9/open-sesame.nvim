@@ -4,7 +4,7 @@
 
 > [!WARNING]
 > This is designed for my use cases, the implementation may be fragile. Feedback is appreciated!
-> For basic usage, the defaults builtin to vim may suffice. Check out [alternatives](#alternatives)
+> For your usage, the defaults built in to vim may suffice. Check out [alternatives](#alternatives)
 
 ## 🖥️ Demo
 https://github.com/user-attachments/assets/c181bfc4-6158-45ea-890f-7b3a4d618132
