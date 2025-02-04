@@ -78,29 +78,47 @@ local function find_path(input)
   return phrases
 end
 
+
+--- TODO: This works but it really needs to be simplified
 ---@param input OpenSesame.Destination
 ---@return OpenSesame.Phrase[] phrases
 local function find_file(input)
   ---@type OpenSesame.Phrase[]
   local phrases = {}
   local start_chars = "[/]"
+  local break_chars = "[ \t\r\n\"']"
 
-  local i = input:match("file:()") or 1
-  local s = input:sub(i + 1, #input)
+  ---@type string[]
+  local substrs = {}
+  local substr = ""
+  for c in input:gmatch(".") do
+    if c:match(break_chars) then
+      table.insert(substrs, substr)
+      substr = ""
+    else
+      substr = substr .. c
+    end
+  end
+  table.insert(substrs, substr)
 
-  local i_start = s:find(start_chars)
-  if i_start then
-    local i_end = s:find(":") or #s + 1
-    local phrase = s:sub(1, i_end - 1)
-    local pos = path_pos(s)
+  for _, s in ipairs(substrs) do
+    local i = s:match("file:()") or 1
+    s = s:sub(i + 1, #input)
 
-    local file_status = vim.fn.filereadable(vim.fn.expand(phrase)) == 1
-    local dir_status = vim.fn.isdirectory(vim.fn.expand(phrase)) == 1
-    if file_status or dir_status then
-      table.insert(phrases, {
-        phrase = phrase,
-        charms = pos
-      })
+    local i_start = s:find(start_chars)
+    if i_start then
+      local i_end = s:find(":") or #s + 1
+      local phrase = s:sub(1, i_end - 1)
+      local pos = path_pos(s)
+
+      local file_status = vim.fn.filereadable(vim.fn.expand(phrase)) == 1
+      local dir_status = vim.fn.isdirectory(vim.fn.expand(phrase)) == 1
+      if file_status or dir_status then
+        table.insert(phrases, {
+          phrase = phrase,
+          charms = pos
+        })
+      end
     end
   end
 
