@@ -36,8 +36,8 @@ local default_opts = {
   },
   nvim_paths = {
     scanners = {
+      scanners.find_file,
       scanners.find_path,
-      scanners.find_file
     },
     door = doors.try_visit_path
   },
@@ -105,12 +105,5 @@ M.setup = function(user_opts)
   opts = vim.tbl_deep_extend('force', opts, user_opts)
   M.did_setup = true
 end
-
--- M.setup({})
--- local line = "plugin/"
--- line = "local input = ./README.md:3:8 gibberish"
--- line = "https://google.com somethingafter https://google.com"
--- local res = execute(line)
--- print(res)
 
 return M

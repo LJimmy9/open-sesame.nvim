@@ -45,7 +45,25 @@ describe("smoke tests", function()
 
   it("file prefix should work", function()
     local in_path = "at async file:///Users/jl/projects/open-sesame.nvim/README.md:8:1"
-    local out_path = "//Users/jl/projects/open-sesame.nvim/README.md"
+    local out_path = "///Users/jl/projects/open-sesame.nvim/README.md"
+    local result = scanners.find_file(in_path)
+    eq(
+      {
+        {
+          phrase = out_path,
+          charms = {
+            col = '1',
+            row = '8',
+          }
+        },
+      },
+      result
+    )
+  end)
+
+  it("paren style row col should work", function()
+    local in_path = "at async file:///Users/jl/projects/open-sesame.nvim/README.md(8:1)"
+    local out_path = "///Users/jl/projects/open-sesame.nvim/README.md"
     local result = scanners.find_file(in_path)
     eq(
       {

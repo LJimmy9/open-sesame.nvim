@@ -41,7 +41,6 @@ local function visit_split(input)
     end
   else
     local error_msg = "Cannot find target: " .. input.phrase
-    -- vim.notify(error_msg, vim.log.levels.WARN, { title = "Error" })
     -- return error(error_msg, 2)
   end
   return line
@@ -111,7 +110,6 @@ local function try_visit_path(input)
   local out = {}
   assert(#input > 0, "input must be greater than 0")
 
-  -- print("CHECK", vim.inspect(input), #input)
   if #input == 1 then
     local result = visit_split(input[1])
     if result then

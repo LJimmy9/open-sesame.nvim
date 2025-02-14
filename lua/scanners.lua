@@ -10,18 +10,18 @@ local function path_pos(input)
     col = ""
   }
 
-  local break_chars = "[ \t\r\n]"
-  local i_break = string.find(input, ":") or string.find(input, break_chars) or #input + 1
-  local char = string.sub(input, i_break, i_break)
-  for _, key in ipairs({ "row", "col" }) do
-    if (char == ":") then
-      i_break = i_break + 1
-      char = string.sub(input, i_break, i_break)
-      while (tonumber(char)) do
-        result[key] = result[key] .. char
-        i_break = i_break + 1
-        char = string.sub(input, i_break, i_break)
-      end
+  local keys = { "row", "col" }
+  local i_key = 0
+
+  for i = 1, #input do
+    if i_key > 2 then
+      break
+    end
+    local char = string.sub(input, i, i)
+    if (tonumber(char)) then
+      result[keys[i_key]] = result[keys[i_key]] .. char
+    else
+      i_key = i_key + 1
     end
   end
 
@@ -103,13 +103,14 @@ local function find_file(input)
 
   for _, s in ipairs(substrs) do
     local i = s:match("file:()") or 1
-    s = s:sub(i + 1, #input)
+    s = s:sub(i, #input)
 
     local i_start = s:find(start_chars)
     if i_start then
-      local i_end = s:find(":") or #s + 1
+      local i_end = s:find("%(") or s:find(":") or #s + 1
+
       local phrase = s:sub(1, i_end - 1)
-      local pos = path_pos(s)
+      local pos = path_pos(s:sub(i_end))
 
       local file_status = vim.fn.filereadable(vim.fn.expand(phrase)) == 1
       local dir_status = vim.fn.isdirectory(vim.fn.expand(phrase)) == 1
